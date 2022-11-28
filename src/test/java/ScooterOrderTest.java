@@ -1,5 +1,8 @@
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -7,58 +10,48 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
-
+@RunWith(Parameterized.class)
 public class ScooterOrderTest {
-    private WebDriver driver;
+    WebDriver driver;
+    private final String button;
+    private final String date;
+    private final String numbers;
+    private final String city;
+    private final String lastName;
+    private final String name;
 
-    @Test
-    public void checkOrderUpOne() {
-        driver = new ChromeDriver();
-        driver.get("https://qa-scooter.praktikum-services.ru/");
-
-        ScooterOrder scooterOrder = new ScooterOrder(driver);
-
-        //Тест заказа самоката по кнопке "Заказать" вверху страницы
-        scooterOrder.clickInButtonOrderUp();
-        scooterOrder.fillOrderOne();
-        assertThat(scooterOrder.getTextAfterOrder(), startsWith("Заказ оформлен"));
-
+    public ScooterOrderTest(String button, String name, String lastName, String city, String numbers, String date) {
+        this.button = button;
+        this.name = name;
+        this.lastName = lastName;
+        this.city = city;
+        this.numbers = numbers;
+        this.date = date;
     }
-    @Test
-    public void checkOrderUpTwo() {
-        driver = new ChromeDriver();
-        driver.get("https://qa-scooter.praktikum-services.ru/");
 
-        ScooterOrder scooterOrder = new ScooterOrder(driver);
+    @Parameterized.Parameters
+    public static Object[][] getCredentials() {
+        return new Object[][] {
+                {"Button_Button__ra12g","Имя","Фамилия", "Москва", "+79887886787", "28.11.2022"},
+                {"Button_Button__ra12g","Двойное имя","ДругаяФамилия", "Самара", "89887886787", "28.11.2023"},
+                {"Button_Button__ra12g Button_Middle__1CSJM","Двойное имя","ДругаяФамилия", "Самара", "89887886787", "28.11.2023"},
+                {"Button_Button__ra12g Button_Middle__1CSJM","Имя","Фамилия", "Москва", "+79887886787", "28.11.2022"},
 
-        //Тест заказа самоката по кнопке "Заказать" вверху страницы
-        scooterOrder.clickInButtonOrderUp();
-        scooterOrder.fillOrderTwo();
-        assertThat(scooterOrder.getTextAfterOrder(), startsWith("Заказ оформлен"));
-
+        };
     }
-    @Test
-    public void checkOrderDownOne() {
+    @Before
+    public void openBrowser(){
+        //System.setProperty("webdriver.edge.driver", "C:\\WebDriver\\bin\\msedgedriver.exe");
+        //driver = new EdgeDriver();
         driver = new ChromeDriver();
         driver.get("https://qa-scooter.praktikum-services.ru/");
-
-        ScooterOrder scooterOrder = new ScooterOrder(driver);
-
-        //Тест заказа самоката по кнопке "Заказать" внизу страницы
-        scooterOrder.clickInButtonOrderDown();
-        scooterOrder.fillOrderOne();
-        assertThat(scooterOrder.getTextAfterOrder(), startsWith("Заказ оформлен"));
     }
+
     @Test
-    public void checkOrderDownTwo() {
-        driver = new ChromeDriver();
-        driver.get("https://qa-scooter.praktikum-services.ru/");
-
+    public void checkTextAfterOrder() {
         ScooterOrder scooterOrder = new ScooterOrder(driver);
-
-        //Тест заказа самоката по кнопке "Заказать" внизу страницы
-        scooterOrder.clickInButtonOrderDown();
-        scooterOrder.fillOrderTwo();
+        scooterOrder.clickInButtonOrder(button);
+        scooterOrder.fillOrder(name,lastName,city,numbers,date);
         assertThat(scooterOrder.getTextAfterOrder(), startsWith("Заказ оформлен"));
     }
 
